@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 16px;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .controls {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .display-area {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .list-item, .tree-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-id {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .tree-visualization {
+            text-align: center;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Library Management System</h1>
+        <p>Complete Management of Members and Books</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('list')">Linked List</button>
+            <button class="tab" onclick="switchTab('tree')">Binary Search Tree</button>
+        </div>
+
+        <div class="content">
+            <div id="messages"></div>
+
+            <!-- LINKED LIST SECTION -->
+            <div id="list" class="section active">
+                <div class="controls">
+                    <h2 style="margin-bottom: 15px;">Linked List Operations</h2>
+                    <div class="input-group">
+                        <input type="number" id="listId" placeholder="ID">
+                        <input type="text" id="listName" placeholder="Name">
+                        <input type="number" id="listPosition" placeholder="Position (optional)">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="insertListBegin()">Insert at Beginning</button>
+                        <button class="btn-primary" onclick="insertListEnd()">Insert at End</button>
+                        <button class="btn-primary" onclick="insertListPosition()">Insert at Position</button>
+                        <button class="btn-danger" onclick="deleteListBegin()">Delete Beginning</button>
+                        <button class="btn-danger" onclick="deleteListEnd()">Delete End</button>
+                        <button class="btn-danger" onclick="deleteListPosition()">Delete Position</button>
+                        <button class="btn-success" onclick="searchList()">Search by ID</button>
+                    </div>
+                </div>
+                <div class="display-area" id="listDisplay">
+                    <div class="empty-state">No items in the list. Add some data!</div>
+                </div>
+            </div>
+
+            <!-- TREE SECTION -->
+            <div id="tree" class="section">
+                <div class="controls">
+                    <h2 style="margin-bottom: 15px;">Binary Search Tree Operations</h2>
+                    <div class="input-group">
+                        <input type="number" id="treeId" placeholder="Book ID">
+                        <input type="text" id="treeTitle" placeholder="Book Title">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="insertBook()">Insert Book</button>
+                        <button class="btn-success" onclick="searchBook()">Search Book</button>
+                        <button class="btn-primary" onclick="displayBooks()">Show Sorted Books</button>
+                    </div>
+                </div>
+                <div class="display-area" id="treeDisplay">
+                    <div class="empty-state">No books in the tree. Add some books!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let linkedList = [];
+        let bst = null;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('messages');
+            const msgEl = document.createElement('div');
+            msgEl.className = `message ${type}`;
+            msgEl.textContent = msg;
+            msgDiv.appendChild(msgEl);
+            setTimeout(() => msgEl.remove(), 3000);
+        }
+
+        // LINKED LIST FUNCTIONS
+        function insertListBegin() {
+            const id = parseInt(document.getElementById('listId').value);
+            const name = document.getElementById('listName').value;
+            if (!id || !name) {
+                showMessage('Please enter both ID and Name', 'error');
+                return;
+            }
+            linkedList.unshift({id, name});
+            showMessage('Node inserted at beginning successfully', 'success');
+            displayList();
+            clearListInputs();
+        }
+
+        function insertListEnd() {
+            const id = parseInt(document.getElementById('listId').value);
+            const name = document.getElementById('listName').value;
+            if (!id || !name) {
+                showMessage('Please enter both ID and Name', 'error');
+                return;
+            }
+            linkedList.push({id, name});
+            showMessage('Node inserted at end successfully', 'success');
+            displayList();
+            clearListInputs();
+        }
+
+        function insertListPosition() {
+            const id = parseInt(document.getElementById('listId').value);
+            const name = document.getElementById('listName').value;
+            const pos = parseInt(document.getElementById('listPosition').value);
+            if (!id || !name || !pos) {
+                showMessage('Please enter ID, Name, and Position', 'error');
+                return;
+            }
+            if (pos < 1 || pos > linkedList.length + 1) {
+                showMessage('Position out of range', 'error');
+                return;
+            }
+            linkedList.splice(pos - 1, 0, {id, name});
+            showMessage(`Node inserted at position ${pos}`, 'success');
+            displayList();
+            clearListInputs();
+        }
+
+        function deleteListBegin() {
+            if (linkedList.length === 0) {
+                showMessage('List is empty', 'error');
+                return;
+            }
+            linkedList.shift();
+            showMessage('Node deleted from beginning', 'success');
+            displayList();
+        }
+
+        function deleteListEnd() {
+            if (linkedList.length === 0) {
+                showMessage('List is empty', 'error');
+                return;
+            }
+            linkedList.pop();
+            showMessage('Node deleted from end', 'success');
+            displayList();
+        }
+
+        function deleteListPosition() {
+            const pos = parseInt(document.getElementById('listPosition').value);
+            if (!pos) {
+                showMessage('Please enter position', 'error');
+                return;
+            }
+            if (pos < 1 || pos > linkedList.length) {
+                showMessage('Position out of range', 'error');
+                return;
+            }
+            linkedList.splice(pos - 1, 1);
+            showMessage(`Node deleted from position ${pos}`, 'success');
+            displayList();
+        }
+
+        function searchList() {
+            const id = parseInt(document.getElementById('listId').value);
+            if (!id) {
+                showMessage('Please enter ID to search', 'error');
+                return;
+            }
+            const node = linkedList.find(n => n.id === id);
+            if (node) {
+                showMessage(`Found: ID ${node.id}, Name: ${node.name}`, 'success');
+            } else {
+                showMessage('Node not found', 'error');
+            }
+        }
+
+        function displayList() {
+            const display = document.getElementById('listDisplay');
+            if (linkedList.length === 0) {
+                display.innerHTML = '<div class="empty-state">No items in the list. Add some data!</div>';
+                return;
+            }
+            display.innerHTML = linkedList.map((node, idx) => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <span class="item-id">ID: ${node.id}</span>
+                        <span>Name: ${node.name}</span>
+                    </div>
+                    <div style="color: #999;">Position: ${idx + 1}</div>
+                </div>
+            `).join('');
+        }
+
+        function clearListInputs() {
+            document.getElementById('listId').value = '';
+            document.getElementById('listName').value = '';
+            document.getElementById('listPosition').value = '';
+        }
+
+        // BINARY SEARCH TREE FUNCTIONS
+        class TreeNode {
+            constructor(id, title) {
+                this.id = id;
+                this.title = title;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        function insertIntoBST(root, id, title) {
+            if (!root) return new TreeNode(id, title);
+            if (id < root.id) root.left = insertIntoBST(root.left, id, title);
+            else if (id > root.id) root.right = insertIntoBST(root.right, id, title);
+            return root;
+        }
+
+        function insertBook() {
+            const id = parseInt(document.getElementById('treeId').value);
+            const title = document.getElementById('treeTitle').value;
+            if (!id || !title) {
+                showMessage('Please enter both Book ID and Title', 'error');
+                return;
+            }
+            bst = insertIntoBST(bst, id, title);
+            showMessage('Book added to tree successfully', 'success');
+            displayBooks();
+            clearTreeInputs();
+        }
+
+        function searchInBST(root, id) {
+            if (!root) return null;
+            if (root.id === id) return root;
+            if (id < root.id) return searchInBST(root.left, id);
+            return searchInBST(root.right, id);
+        }
+
+        function searchBook() {
+            const id = parseInt(document.getElementById('treeId').value);
+            if (!id) {
+                showMessage('Please enter Book ID to search', 'error');
+                return;
+            }
+            const book = searchInBST(bst, id);
+            if (book) {
+                showMessage(`Found: ID ${book.id}, Title: ${book.title}`, 'success');
+            } else {
+                showMessage('Book not found', 'error');
+            }
+        }
+
+        function inorderTraversal(root, result = []) {
+            if (!root) return result;
+            inorderTraversal(root.left, result);
+            result.push(root);
+            inorderTraversal(root.right, result);
+            return result;
+        }
+
+        function displayBooks() {
+            const display = document.getElementById('treeDisplay');
+            if (!bst) {
+                display.innerHTML = '<div class="empty-state">No books in the tree. Add some books!</div>';
+                return;
+            }
+            const books = inorderTraversal(bst);
+            display.innerHTML = '<h3 style="margin-bottom: 15px;">Sorted Books (In-order Traversal):</h3>' +
+                books.map(book => `
+                    <div class="tree-item">
+                        <div class="item-info">
+                            <span class="item-id">ID: ${book.id}</span>
+                            <span>Title: ${book.title}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function clearTreeInputs() {
+            document.getElementById('treeId').value = '';
+            document.getElementById('treeTitle').value = '';
+        }
+    </script>
+</body>
+</html>
