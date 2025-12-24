@@ -76,3 +76,33 @@ This project demonstrates core *Data Structures* concepts using *C++* with a sim
 ---
 
 ## 📋 Menu Example
+1.	Insert Begin (List)
+	2.	Insert End (List)
+	3.	Insert Position (List)
+	4.	Delete Begin (List)
+	5.	Delete End (List)
+	6.	Delete Position (List)
+	7.	Search (List)
+	8.	Show List
+	9.	Insert Book (Tree)
+	10.	Search Book (Tree)
+	11.	Show Sorted Books (Tree)
+	12.	Exit
+     ---
+
+## 🎯 Learning Outcomes
+
+- Strong understanding of *Linked List* operations.
+- Practical implementation of *Binary Search Trees*.
+- Experience building interactive *console-based GUIs*.
+- Clean and modular C++ code structure.
+
+---
+
+## 🔗 GitHub Repository
+
+[View on GitHub](https://github.com/mariamelsayed891/data-structure_project)
+
+---
+
+⭐ If you like this project, don’t forget to give it a star!
